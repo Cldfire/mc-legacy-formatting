@@ -64,7 +64,7 @@ pub use color_print::PrintSpanColored;
 
 /// An extension trait that adds a method for creating a `SpanIter`
 pub trait SpanExt {
-    /// Produces a `SpanIter` from `&self`, optionally configuring the `start_char`
+    /// Produces a `SpanIter` from `&self`
     ///
     /// # Examples
     ///
