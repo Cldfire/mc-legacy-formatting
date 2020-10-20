@@ -4,8 +4,13 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 ## [Unreleased]
 
+## [0.1.1] - 2020-10-19
+
+Fixed some issues with the `Cargo.toml` metadata after the initial publish.
+
 ## [0.1.0] - 2020-10-19
 
 Initial release.
 
+[0.1.1]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Cldfire/mc-legacy-formatting/releases/tag/0.1.0
