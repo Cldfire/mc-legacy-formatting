@@ -8,7 +8,7 @@
 A parser for Minecraft's [legacy formatting system][legacy_fmt], created
 with careful attention to the quirks of the vanilla client's implementation.
 
-# Features
+## Features
 
 * Iterator-based, non-allocating parser
 * Supports the entire spec as well as vanilla client quirks (such as handling
@@ -17,7 +17,7 @@ with careful attention to the quirks of the vanilla client's implementation.
 * Support for parsing any start character for the formatting codes (vanilla
   uses `§` while many community tools use `&`)
 
-# Examples
+## Examples
 
 Using `SpanIter`:
 
