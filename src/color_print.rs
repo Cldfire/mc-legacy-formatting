@@ -5,26 +5,13 @@ use crate::{Color, Span, Styles};
 /// # Examples
 ///
 /// ```
-/// use mc_legacy_formatting::{SpanIter, PrintSpanColored};
-///
-/// let s = "§4This will be dark red §oand italic";
-/// let span_iter = SpanIter::new(s);
-///
-/// span_iter.map(PrintSpanColored::from).for_each(|s| print!("{}", s));
-/// println!();
-///
-/// // Output will look close to what you'd see in Minecraft (ignoring the font difference)
-/// ```
-///
-///
-/// ## Using SpanExt
-///
-/// ```
 /// use mc_legacy_formatting::{SpanExt, Span};
 ///
 /// let s = "§4This will be dark red §oand italic";
-/// s.span_iter(None).map(Span::as_colored).for_each(|s| print!("{}", s));
+/// s.span_iter().map(Span::to_colored).for_each(|s| print!("{}", s));
 /// println!();
+///
+/// // Output will look close to what you'd see in Minecraft (ignoring the font difference)
 /// ```
 pub struct PrintSpanColored<'a>(Span<'a>);
 

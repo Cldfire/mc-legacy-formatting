@@ -16,10 +16,10 @@
 //! Using [`SpanIter`][SpanIter]:
 //!
 //! ```
-//! use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+//! use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
 //!
 //! let s = "§4This will be dark red §oand italic";
-//! let mut span_iter = SpanIter::new(s);
+//! let mut span_iter = s.span_iter();
 //!
 //! assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
 //! assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
@@ -29,10 +29,10 @@
 //! With a custom start character:
 //!
 //! ```
-//! use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+//! use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
 //!
 //! let s = "&6It's a lot easier to type &b& &6than &b§";
-//! let mut span_iter = SpanIter::new(s).with_start_char('&');
+//! let mut span_iter = s.span_iter().with_start_char('&');
 //!
 //! assert_eq!(span_iter.next().unwrap(), Span::new_styled("It's a lot easier to type ", Color::Gold, Styles::empty()));
 //! assert_eq!(span_iter.next().unwrap(), Span::new_styled("& ", Color::Aqua, Styles::empty()));
@@ -72,23 +72,18 @@ pub trait SpanExt {
     /// use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
     ///
     /// let s = "§4This will be dark red §oand italic";
-    /// let mut span_iter = s.span_iter(None);
+    /// let mut span_iter = s.span_iter();
     ///
     /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
     /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
     /// assert!(span_iter.next().is_none());
     /// ```
-    fn span_iter<C>(&self, start_char: C) -> SpanIter
-    where
-        C: Into<Option<char>>;
+    fn span_iter(&self) -> SpanIter;
 }
 
 impl<T: AsRef<str>> SpanExt for T {
-    fn span_iter<C>(&self, start_char: C) -> SpanIter
-    where
-        C: Into<Option<char>>,
-    {
-        SpanIter::new(self.as_ref()).with_start_char(start_char.into().unwrap_or('§'))
+    fn span_iter(&self) -> SpanIter {
+        SpanIter::new(self.as_ref())
     }
 }
 
@@ -330,7 +325,7 @@ impl<'a> Iterator for SpanIter<'a> {
 /// Text with an associated color and associated styles.
 ///
 /// `Span` implements `Display` and can be neatly printed.
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Span<'a> {
     /// A styled slice of text
     Styled {
@@ -404,7 +399,7 @@ impl<'a> Span<'a> {
 
     /// Returns a prinatable colored version of the `Span`
     #[cfg(feature = "color-print")]
-    pub fn as_colored(self) -> PrintSpanColored<'a> {
+    pub fn to_colored(self) -> PrintSpanColored<'a> {
         PrintSpanColored::from(self)
     }
 }
