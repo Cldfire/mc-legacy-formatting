@@ -23,10 +23,10 @@ with careful attention to the quirks of the vanilla client's implementation.
 Using `SpanIter`:
 
 ```rust
-use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
 
 let s = "§4This will be dark red §oand italic";
-let mut span_iter = SpanIter::new(s);
+let mut span_iter = s.span_iter();
 
 assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
 assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
@@ -36,10 +36,10 @@ assert!(span_iter.next().is_none());
 With a custom start character:
 
 ```rust
-use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
 
 let s = "&6It's a lot easier to type &b& &6than &b§";
-let mut span_iter = SpanIter::new(s).with_start_char('&');
+let mut span_iter = s.span_iter().with_start_char('&');
 
 assert_eq!(span_iter.next().unwrap(), Span::new_styled("It's a lot easier to type ", Color::Gold, Styles::empty()));
 assert_eq!(span_iter.next().unwrap(), Span::new_styled("& ", Color::Aqua, Styles::empty()));
