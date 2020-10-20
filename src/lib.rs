@@ -161,7 +161,9 @@ impl<'a> SpanIter<'a> {
 
             // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
             // as a solid line. This replicates that behavior
-            if text.chars().all(|c| c.is_ascii_whitespace()) {
+            if text.chars().all(|c| c.is_ascii_whitespace())
+                && self.styles.contains(Styles::STRIKETHROUGH)
+            {
                 Span::StrikethroughWhitespace {
                     num_chars: text.len(),
                     color: self.color,
@@ -959,6 +961,30 @@ mod test {
                 Span::new_styled("(", Color::Gray, Styles::empty()),
                 Span::new_styled("!", Color::DarkRed, Styles::empty()),
                 Span::new_styled(")", Color::Gray, Styles::empty()),
+            ]
+        );
+    }
+
+    #[test]
+    fn avoids_incorrect_whitespace_strikethrough() {
+        let s = "§f§b§lMINE§6§lHEROES §7- §astore.mineheroes.net§a §2§l[75% Sale]\n§b§lSKYBLOCK §f§l+ §2§lKRYPTON §f§lRESET! §f§l- §6§lNEW FALL CRATE";
+        assert_eq!(
+            spans(s),
+            vec![
+                Span::new_styled("MINE", Color::Aqua, Styles::BOLD),
+                Span::new_styled("HEROES ", Color::Gold, Styles::BOLD),
+                Span::new_styled("- ", Color::Gray, Styles::empty()),
+                Span::new_styled("store.mineheroes.net", Color::Green, Styles::empty()),
+                // A bug in the whitespace strikethrough handling was making this a
+                // `Span::WhitespaceStrikethrough`
+                Span::new_styled(" ", Color::Green, Styles::empty()),
+                Span::new_styled("[75% Sale]\n", Color::DarkGreen, Styles::BOLD),
+                Span::new_styled("SKYBLOCK ", Color::Aqua, Styles::BOLD),
+                Span::new_styled("+ ", Color::White, Styles::BOLD),
+                Span::new_styled("KRYPTON ", Color::DarkGreen, Styles::BOLD),
+                Span::new_styled("RESET! ", Color::White, Styles::BOLD),
+                Span::new_styled("- ", Color::White, Styles::BOLD),
+                Span::new_styled("NEW FALL CRATE", Color::Gold, Styles::BOLD)
             ]
         );
     }
