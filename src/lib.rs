@@ -45,6 +45,8 @@
 //! [SpanIter]: struct.SpanIter.html
 
 #![no_std]
+#![deny(missing_docs)]
+#![deny(unused_must_use)]
 
 /// Bring `std` in for testing
 #[cfg(test)]
@@ -369,8 +371,13 @@ impl<'a> Span<'a> {
     }
 }
 
-/// Various colors that a `Span` can have
+/// Various colors that a `Span` can have.
+///
+/// See [the wiki.vg docs][colors] for specific information.
+///
+/// [colors]: https://wiki.vg/Chat#Colors
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[allow(missing_docs)]
 pub enum Color {
     Black,
     DarkBlue,
@@ -550,7 +557,7 @@ bitflags! {
     /// The `RESET` flag is missing because the parser implemented in `SpanIter`
     /// takes care of it for you.
     ///
-    /// See [wiki.vg's docs][legacy_fmt] for detailed info about each style.
+    /// See [wiki.vg's docs][styles] for detailed info about each style.
     ///
     /// # Examples
     ///
@@ -562,7 +569,7 @@ bitflags! {
     /// assert!(!styles.contains(Styles::RANDOM));
     /// ```
     ///
-    /// [legacy_fmt]: https://wiki.vg/Chat#Colors
+    /// [styles]: https://wiki.vg/Chat#Styles
     #[derive(Default)]
     pub struct Styles: u32 {
         /// Signals that the `Span`'s text should be replaced with randomized
