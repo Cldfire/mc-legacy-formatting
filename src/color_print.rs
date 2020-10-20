@@ -15,6 +15,17 @@ use crate::{Color, Span, Styles};
 ///
 /// // Output will look close to what you'd see in Minecraft (ignoring the font difference)
 /// ```
+///
+///
+/// ## Using SpanExt
+///
+/// ```
+/// use mc_legacy_formatting::{SpanExt, Span};
+///
+/// let s = "§4This will be dark red §oand italic";
+/// s.span_iter(None).map(Span::as_colored).for_each(|s| print!("{}", s));
+/// println!();
+/// ```
 pub struct PrintSpanColored<'a>(Span<'a>);
 
 impl<'a> From<Span<'a>> for PrintSpanColored<'a> {

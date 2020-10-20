@@ -62,6 +62,36 @@ mod color_print;
 #[cfg(feature = "color-print")]
 pub use color_print::PrintSpanColored;
 
+/// An extension trait that adds a method for creating a `SpanIter`
+pub trait SpanExt {
+    /// Produces an `SpanIter` from `&self`, optionally configuring the `start_char`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
+    ///
+    /// let s = "§4This will be dark red §oand italic";
+    /// let mut span_iter = s.span_iter(None);
+    ///
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
+    /// assert!(span_iter.next().is_none());
+    /// ```
+    fn span_iter<C>(&self, start_char: C) -> SpanIter
+    where
+        C: Into<Option<char>>;
+}
+
+impl<T: AsRef<str>> SpanExt for T {
+    fn span_iter<C>(&self, start_char: C) -> SpanIter
+    where
+        C: Into<Option<char>>,
+    {
+        SpanIter::new(self.as_ref()).with_start_char(start_char.into().unwrap_or('§'))
+    }
+}
+
 /// An iterator that yields [`Span`][Span]s from an input string.
 ///
 /// # Examples
@@ -105,7 +135,7 @@ impl<'a> SpanIter<'a> {
         }
     }
 
-    /// Set the start character used while parsing.
+    /// Set the start character used while parsing
     ///
     /// # Examples
     ///
@@ -370,6 +400,12 @@ impl<'a> Span<'a> {
             color,
             styles,
         }
+    }
+
+    /// Returns a prinatable colored version of the `Span`
+    #[cfg(feature = "color-print")]
+    pub fn as_colored(self) -> PrintSpanColored<'a> {
+        PrintSpanColored::from(self)
     }
 }
 
