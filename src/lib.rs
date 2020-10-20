@@ -68,9 +68,34 @@ impl<'a> SpanIter<'a> {
     }
 }
 
+/// Keeps track of the state for each iteration
+#[derive(Debug, Copy, Clone)]
 enum SpanIterState {
-    GatheringStyles(bool),
-    GatheringText(bool),
+    GatheringStyles(GatheringStylesState),
+    GatheringText(GatheringTextState),
+}
+
+/// In this state we are at the beginning of an iteration and we are looking to
+/// handle any initial formatting codes
+#[derive(Debug, Copy, Clone)]
+enum GatheringStylesState {
+    /// We're looking for our start char
+    ExpectingStartChar,
+    /// We've found our start char and are expecting a fmt code after it
+    ExpectingFmtCode,
+}
+
+/// In this state we've encountered text unrelated to formatting, which means
+/// the next valid fmt code we encounter ends this iteration
+#[derive(Debug, Copy, Clone)]
+enum GatheringTextState {
+    /// We're waiting to find our start char
+    WaitingForStartChar,
+    /// We've found our start char and are expecting a fmt code after it
+    ///
+    /// If we find a valid fmt code in this state, we need to make a span, apply
+    /// this last fmt code to our state, and end this iteration.
+    ExpectingEndChar,
 }
 
 impl<'a> Iterator for SpanIter<'a> {
@@ -80,35 +105,52 @@ impl<'a> Iterator for SpanIter<'a> {
         if self.finished {
             return None;
         }
-        let mut state = SpanIterState::GatheringStyles(false);
+        let mut state = SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar);
         let mut span_start = None;
         let mut span_end = None;
 
         while let Some((idx, c)) = self.chars.next() {
             state = match state {
-                SpanIterState::GatheringStyles(expecting_seq_end) => {
-                    if expecting_seq_end {
-                        if let Some(color) = Color::from_char(c) {
-                            self.update_color(color);
-                            span_start = None;
-                            SpanIterState::GatheringStyles(false)
-                        } else if let Some(style) = Styles::from_char(c) {
-                            self.update_styles(style);
-                            span_start = None;
-                            SpanIterState::GatheringStyles(false)
-                        } else {
-                            SpanIterState::GatheringText(false)
-                        }
-                    } else {
+                SpanIterState::GatheringStyles(style_state) => match style_state {
+                    GatheringStylesState::ExpectingStartChar => {
                         span_start = Some(idx);
                         match c {
-                            '§' => SpanIterState::GatheringStyles(true),
-                            _ => SpanIterState::GatheringText(false),
+                            '§' => SpanIterState::GatheringStyles(
+                                GatheringStylesState::ExpectingFmtCode,
+                            ),
+                            _ => SpanIterState::GatheringText(
+                                GatheringTextState::WaitingForStartChar,
+                            ),
                         }
                     }
-                }
-                SpanIterState::GatheringText(expecting_seq_end) => {
-                    if expecting_seq_end {
+                    GatheringStylesState::ExpectingFmtCode => {
+                        if let Some(color) = Color::from_char(c) {
+                            self.update_color(color);
+                            span_start = None;
+                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                        } else if let Some(style) = Styles::from_char(c) {
+                            self.update_styles(style);
+                            span_start = None;
+                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                        } else {
+                            SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
+                        }
+                    }
+                },
+                SpanIterState::GatheringText(text_state) => match text_state {
+                    GatheringTextState::WaitingForStartChar => match c {
+                        '§' => {
+                            span_end = Some(idx);
+                            SpanIterState::GatheringText(GatheringTextState::ExpectingEndChar)
+                        }
+                        _ => state,
+                    },
+                    GatheringTextState::ExpectingEndChar => {
+                        // Note that we only end this iteration if we find a valid fmt code
+                        //
+                        // If we do, we make sure to apply it to our state so that we can
+                        // pick up where we left off when the next iteration begins
+
                         if let Some(color) = Color::from_char(c) {
                             let span = self.make_span(span_start.unwrap(), span_end.unwrap());
                             self.update_color(color);
@@ -118,18 +160,11 @@ impl<'a> Iterator for SpanIter<'a> {
                             self.update_styles(style);
                             return Some(span);
                         } else {
-                            SpanIterState::GatheringText(false)
-                        }
-                    } else {
-                        match c {
-                            '§' => {
-                                span_end = Some(idx);
-                                SpanIterState::GatheringText(true)
-                            }
-                            _ => state,
+                            span_end = None;
+                            SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
                         }
                     }
-                }
+                },
             }
         }
 
