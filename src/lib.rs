@@ -1,7 +1,68 @@
+//! A parser for Minecraft's [legacy formatting system][legacy_fmt], created
+//! with careful attention to the quirks of the vanilla client's implementation.
+//!
+//! # Features
+//!
+//! * Iterator-based, non-allocating parser
+//! * Supports the entire spec as well as vanilla client quirks (such as handling
+//!   of whitespace with the `STRIKETHROUGH` style)
+//! * Helpers for pretty-printing the parsed `Span`s to the terminal
+//! * Support for parsing any start character for the formatting codes (vanilla
+//!   uses `§` while many community tools use `&`)
+//!
+//! # Examples
+//!
+//! Using [`SpanIter`][SpanIter]:
+//!
+//! ```
+//! use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+//!
+//! let s = "§4This will be dark red §oand italic";
+//! let mut span_iter = SpanIter::new(s);
+//!
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
+//! assert!(span_iter.next().is_none());
+//! ```
+//!
+//! With a custom start character:
+//!
+//! ```
+//! use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+//!
+//! let s = "&6It's a lot easier to type &b& &6than &b§";
+//! let mut span_iter = SpanIter::new(s).with_start_char('&');
+//!
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("It's a lot easier to type ", Color::Gold, Styles::empty()));
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("& ", Color::Aqua, Styles::empty()));
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("than ", Color::Gold, Styles::empty()));
+//! assert_eq!(span_iter.next().unwrap(), Span::new_styled("§", Color::Aqua, Styles::empty()));
+//! assert!(span_iter.next().is_none());
+//! ```
+//!
+//! [legacy_fmt]: https://wiki.vg/Chat#Colors
+//! [SpanIter]: struct.SpanIter.html
+
 use std::str::CharIndices;
 
 use bitflags::bitflags;
 
+/// An iterator that yields [`Span`][Span]s from an input string.
+///
+/// # Examples
+///
+/// ```
+/// use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+///
+/// let s = "§4This will be dark red §oand italic";
+/// let mut span_iter = SpanIter::new(s);
+///
+/// assert_eq!(span_iter.next().unwrap(), Span::new_styled("This will be dark red ", Color::DarkRed, Styles::empty()));
+/// assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
+/// assert!(span_iter.next().is_none());
+/// ```
+///
+/// [Span]: enum.Span.html
 #[derive(Debug, Clone)]
 pub struct SpanIter<'a> {
     buf: &'a str,
@@ -17,10 +78,11 @@ pub struct SpanIter<'a> {
 }
 
 impl<'a> SpanIter<'a> {
-    pub fn new(buf: &'a str) -> Self {
+    /// Create a new `SpanIter` to parse the given string
+    pub fn new(s: &'a str) -> Self {
         Self {
-            buf,
-            chars: buf.char_indices(),
+            buf: s,
+            chars: s.char_indices(),
             start_char: '§',
             color: Color::White,
             styles: Styles::default(),
@@ -28,9 +90,30 @@ impl<'a> SpanIter<'a> {
         }
     }
 
+    /// Set the start character used while parsing.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::{SpanIter, Span, Color, Styles};
+    ///
+    /// let s = "&6It's a lot easier to type &b& &6than &b§";
+    /// let mut span_iter = SpanIter::new(s).with_start_char('&');
+    ///
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("It's a lot easier to type ", Color::Gold, Styles::empty()));
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("& ", Color::Aqua, Styles::empty()));
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("than ", Color::Gold, Styles::empty()));
+    /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("§", Color::Aqua, Styles::empty()));
+    /// assert!(span_iter.next().is_none());
+    /// ```
     pub fn with_start_char(mut self, c: char) -> Self {
         self.start_char = c;
         self
+    }
+
+    /// Set the start character used while parsing
+    pub fn set_start_char(&mut self, c: char) {
+        self.start_char = c;
     }
 
     /// Update the currently stored color
@@ -43,12 +126,13 @@ impl<'a> SpanIter<'a> {
 
     /// Insert `styles` into the currently stored styles
     fn update_styles(&mut self, styles: Styles) {
-        if styles.contains(Styles::RESET) {
-            self.color = Color::White;
-            self.styles = Styles::empty();
-        } else {
-            self.styles.insert(styles);
-        }
+        self.styles.insert(styles);
+    }
+
+    /// Should be called when encountering the `RESET` fmt code
+    fn reset_styles(&mut self) {
+        self.color = Color::White;
+        self.styles = Styles::empty();
     }
 
     /// Make a `Span` based off the current state of the iterator
@@ -143,6 +227,12 @@ impl<'a> Iterator for SpanIter<'a> {
                             self.update_styles(style);
                             span_start = None;
                             SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                        } else if c == 'r' || c == 'R' {
+                            // Handle the `RESET` fmt code
+
+                            self.reset_styles();
+                            span_start = None;
+                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
                         } else {
                             SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
                         }
@@ -170,6 +260,12 @@ impl<'a> Iterator for SpanIter<'a> {
                             let span = self.make_span(span_start.unwrap(), span_end.unwrap());
                             self.update_styles(style);
                             return Some(span);
+                        } else if c == 'r' || c == 'R' {
+                            // Handle the `RESET` fmt code
+
+                            let span = self.make_span(span_start.unwrap(), span_end.unwrap());
+                            self.reset_styles();
+                            return Some(span);
                         } else {
                             span_end = None;
                             SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
@@ -184,18 +280,42 @@ impl<'a> Iterator for SpanIter<'a> {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+/// Text with an associated color and associated styles.
+///
+/// `Span` implements `Display` and can be neatly printed.
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum Span<'a> {
+    /// A styled slice of text
     Styled {
+        /// The styled text slice
         text: &'a str,
+        /// The color of the text
         color: Color,
+        /// Styles that should be applied to the text
         styles: Styles,
     },
+    /// An unbroken sequence of whitespace that was given the `STRIKETHROUGH`
+    /// style.
+    ///
+    /// The vanilla client renders whitespace with the `STRIKETHROUGH` style
+    /// as a solid line; this variant allows for replicating that behavior.
     StrikethroughWhitespace {
+        /// The number of whitespace characters this span is in place of.
+        ///
+        /// You should draw `num_chars` dashes to represent the line (or,
+        /// if your rendering situation allows for it, a solid line of
+        /// `num_chars` length).
         num_chars: usize,
+        /// The color of the line
         color: Color,
+        /// Styles applied to the line (will contain at least
+        /// `STRIKETHROUGH`)
         styles: Styles,
     },
+    /// An unstyled slice of text
+    ///
+    /// This should be given a default style. The vanilla client
+    /// would use `color::White` and `Styles::empty()`.
     Plain(&'a str),
 }
 
@@ -212,10 +332,12 @@ impl<'a> std::fmt::Display for Span<'a> {
 }
 
 impl<'a> Span<'a> {
+    /// Create a new `Span::Plain`
     pub fn new_plain(s: &'a str) -> Self {
         Span::Plain(s)
     }
 
+    /// Create a new `Span::StrikethroughWhitespace`
     pub fn new_strikethrough_whitespace(num_chars: usize, color: Color, styles: Styles) -> Self {
         Span::StrikethroughWhitespace {
             num_chars,
@@ -224,6 +346,7 @@ impl<'a> Span<'a> {
         }
     }
 
+    /// Create a new `Span::Styled`
     pub fn new_styled(s: &'a str, color: Color, styles: Styles) -> Self {
         Span::Styled {
             text: s,
@@ -233,6 +356,21 @@ impl<'a> Span<'a> {
     }
 }
 
+/// A wrapper around `Span` that provides colored pretty-printing
+///
+/// # Examples
+///
+/// ```
+/// use mc_legacy_formatting::{SpanIter, PrintSpanColored};
+///
+/// let s = "§4This will be dark red §oand italic";
+/// let span_iter = SpanIter::new(s);
+///
+/// span_iter.map(PrintSpanColored::from).for_each(|s| print!("{}", s));
+/// println!();
+///
+/// // Output will look close to what you'd see in Minecraft (ignoring the font difference)
+/// ```
 pub struct PrintSpanColored<'a>(Span<'a>);
 
 impl<'a> From<Span<'a>> for PrintSpanColored<'a> {
@@ -292,6 +430,7 @@ impl<'a> std::fmt::Display for PrintSpanColored<'a> {
     }
 }
 
+/// Various colors that a `Span` can have
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Color {
     Black,
@@ -342,6 +481,9 @@ impl From<Color> for colored::Color {
 }
 
 impl Color {
+    /// Map a `char` to a `Color`.
+    ///
+    /// Returns `None` if `c` didn't map to a `Color`.
     pub fn from_char(c: char) -> Option<Self> {
         Some(match c {
             '0' => Color::Black,
@@ -367,18 +509,44 @@ impl Color {
 }
 
 bitflags! {
+    /// Styles that can be combined and applied to a `Span`.
+    ///
+    /// The `RESET` flag is missing because the parser implemented in `SpanIter`
+    /// takes care of it for you.
+    ///
+    /// See [wiki.vg's docs][legacy_fmt] for detailed info about each style.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::Styles;
+    /// let styles = Styles::BOLD | Styles::ITALIC | Styles::UNDERLINED;
+    ///
+    /// assert!(styles.contains(Styles::BOLD));
+    /// assert!(!styles.contains(Styles::RANDOM));
+    /// ```
+    ///
+    /// [legacy_fmt]: https://wiki.vg/Chat#Colors
     #[derive(Default)]
     pub struct Styles: u32 {
+        /// Signals that the `Span`'s text should be replaced with randomized
+        /// characters at a constant interval
         const RANDOM        = 0b00000001;
+        /// Signals that the `Span`'s text should be bold
         const BOLD          = 0b00000010;
+        /// Signals that the `Span`'s text should be strikethrough
         const STRIKETHROUGH = 0b00000100;
+        /// Signals that the `Span`'s text should be underlined
         const UNDERLINED    = 0b00001000;
+        /// Signals that the `Span`'s text should be italic
         const ITALIC        = 0b00010000;
-        const RESET         = 0b00100000;
     }
 }
 
 impl Styles {
+    /// Map a `char` to a `Styles` object.
+    ///
+    /// Returns `None` if `c` didn't map to a `Styles` object.
     pub fn from_char(c: char) -> Option<Self> {
         Some(match c {
             // The vanilla client accepts lower or uppercase interchangeably
@@ -387,7 +555,6 @@ impl Styles {
             'm' | 'M' => Styles::STRIKETHROUGH,
             'n' | 'N' => Styles::UNDERLINED,
             'o' | 'O' => Styles::ITALIC,
-            'r' | 'R' => Styles::RESET,
             _ => return None,
         })
     }
