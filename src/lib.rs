@@ -6,6 +6,11 @@ use bitflags::bitflags;
 pub struct SpanIter<'a> {
     buf: &'a str,
     chars: CharIndices<'a>,
+    /// The character that indicates the beginning of a fmt code
+    ///
+    /// The vanilla client uses `§` for this, but community tooling often uses
+    /// `&`, so we allow it to be configured
+    start_char: char,
     color: Color,
     styles: Styles,
     finished: bool,
@@ -16,10 +21,16 @@ impl<'a> SpanIter<'a> {
         Self {
             buf,
             chars: buf.char_indices(),
+            start_char: '§',
             color: Color::White,
             styles: Styles::default(),
             finished: false,
         }
+    }
+
+    pub fn with_start_char(mut self, c: char) -> Self {
+        self.start_char = c;
+        self
     }
 
     /// Update the currently stored color
@@ -115,7 +126,7 @@ impl<'a> Iterator for SpanIter<'a> {
                     GatheringStylesState::ExpectingStartChar => {
                         span_start = Some(idx);
                         match c {
-                            '§' => SpanIterState::GatheringStyles(
+                            c if c == self.start_char => SpanIterState::GatheringStyles(
                                 GatheringStylesState::ExpectingFmtCode,
                             ),
                             _ => SpanIterState::GatheringText(
@@ -139,7 +150,7 @@ impl<'a> Iterator for SpanIter<'a> {
                 },
                 SpanIterState::GatheringText(text_state) => match text_state {
                     GatheringTextState::WaitingForStartChar => match c {
-                        '§' => {
+                        c if c == self.start_char => {
                             span_end = Some(idx);
                             SpanIterState::GatheringText(GatheringTextState::ExpectingEndChar)
                         }
@@ -391,6 +402,10 @@ mod test {
         SpanIter::new(s).collect()
     }
 
+    fn spans_sc(start_char: char, s: &str) -> Vec<Span> {
+        SpanIter::new(s).with_start_char(start_char).collect()
+    }
+
     mod fake_codes {
         use super::*;
         use pretty_assertions::assert_eq;
@@ -464,6 +479,85 @@ mod test {
             assert_eq!(
                 spans(s),
                 vec![Span::new_plain("§§§§§this has no format§ting codes§")]
+            );
+        }
+    }
+
+    mod custom_start_char {
+        use super::*;
+        use pretty_assertions::assert_eq;
+
+        #[test]
+        fn using_ampersand() {
+            let s = "&4this will be dark red";
+            assert_eq!(
+                spans_sc('&', s),
+                vec![Span::new_styled(
+                    "this will be dark red",
+                    Color::DarkRed,
+                    Styles::empty()
+                )]
+            );
+        }
+
+        #[test]
+        fn multiple_styles() {
+            let s = "&1&e&d&lthis will be light purple and bold &o&a&e&a&mand this \
+                    will be green and strikethrough";
+            assert_eq!(
+                spans_sc('&', s),
+                vec![
+                    Span::new_styled(
+                        "this will be light purple and bold ",
+                        Color::LightPurple,
+                        Styles::BOLD
+                    ),
+                    Span::new_styled(
+                        "and this will be green and strikethrough",
+                        Color::Green,
+                        Styles::STRIKETHROUGH
+                    )
+                ]
+            );
+        }
+
+        #[test]
+        fn supports_uppercase_style_codes() {
+            let s = "&5&m                  &6>&7&l&6&l>&6&l[&5&l&oPurple &8&l&oPrison&6&l]&6&l<&6<&5&m                     \
+                        &R &7              (&4!&7) &e&lSERVER HAS &D&LRESET! &7(&4!&7)";
+            assert_eq!(
+                spans_sc('&', s),
+                vec![
+                    // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
+                    // as a solid line.
+                    Span::new_strikethrough_whitespace(
+                        18,
+                        Color::DarkPurple,
+                        Styles::STRIKETHROUGH
+                    ),
+                    Span::new_styled(">", Color::Gold, Styles::empty()),
+                    Span::new_styled(">", Color::Gold, Styles::BOLD),
+                    Span::new_styled("[", Color::Gold, Styles::BOLD),
+                    Span::new_styled("Purple ", Color::DarkPurple, Styles::BOLD | Styles::ITALIC),
+                    Span::new_styled("Prison", Color::DarkGray, Styles::BOLD | Styles::ITALIC),
+                    Span::new_styled("]", Color::Gold, Styles::BOLD),
+                    Span::new_styled("<", Color::Gold, Styles::BOLD),
+                    Span::new_styled("<", Color::Gold, Styles::empty()),
+                    Span::new_strikethrough_whitespace(
+                        21,
+                        Color::DarkPurple,
+                        Styles::STRIKETHROUGH
+                    ),
+                    Span::new_plain(" "),
+                    Span::new_styled("              (", Color::Gray, Styles::empty()),
+                    Span::new_styled("!", Color::DarkRed, Styles::empty()),
+                    Span::new_styled(") ", Color::Gray, Styles::empty()),
+                    Span::new_styled("SERVER HAS ", Color::Yellow, Styles::BOLD),
+                    Span::new_styled("RESET! ", Color::LightPurple, Styles::BOLD),
+                    Span::new_styled("(", Color::Gray, Styles::empty()),
+                    Span::new_styled("!", Color::DarkRed, Styles::empty()),
+                    Span::new_styled(")", Color::Gray, Styles::empty()),
+                ]
             );
         }
     }
