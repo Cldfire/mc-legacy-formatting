@@ -1,6 +1,6 @@
 [package]
 name = "mc-legacy-formatting"
-version = "0.1.2"
+version = "0.2.0"
 license = "MIT OR Apache-2.0"
 authors = ["Cldfire <cldfire3@gmail.com>"]
 repository = "https://github.com/Cldfire/mc-legacy-formatting"
