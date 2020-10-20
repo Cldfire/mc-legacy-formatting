@@ -8,7 +8,7 @@ use crate::{Color, Span, Styles};
 /// use mc_legacy_formatting::{SpanExt, Span};
 ///
 /// let s = "§4This will be dark red §oand italic";
-/// s.span_iter().map(Span::to_colored).for_each(|s| print!("{}", s));
+/// s.span_iter().map(Span::wrap_colored).for_each(|s| print!("{}", s));
 /// println!();
 ///
 /// // Output will look close to what you'd see in Minecraft (ignoring the font difference)

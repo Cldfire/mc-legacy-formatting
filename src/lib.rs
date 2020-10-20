@@ -397,9 +397,9 @@ impl<'a> Span<'a> {
         }
     }
 
-    /// Returns a printable colored version of the `Span`
+    /// Wraps this `Span` in a type that enables colored printing
     #[cfg(feature = "color-print")]
-    pub fn to_colored(self) -> PrintSpanColored<'a> {
+    pub fn wrap_colored(self) -> PrintSpanColored<'a> {
         PrintSpanColored::from(self)
     }
 }
