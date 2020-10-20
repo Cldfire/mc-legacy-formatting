@@ -11,7 +11,8 @@ with careful attention to the quirks of the vanilla client's implementation.
 ## Features
 
 * Iterator-based, non-allocating parser
-* Supports the entire spec as well as vanilla client quirks (such as handling
+* Supports `#![no_std]` usage (with `default-features` set to `false`)
+* Implements the entire spec as well as vanilla client quirks (such as handling
   of whitespace with the `STRIKETHROUGH` style)
 * Helpers for pretty-printing the parsed `Span`s to the terminal
 * Support for parsing any start character for the formatting codes (vanilla

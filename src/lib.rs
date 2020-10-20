@@ -4,7 +4,8 @@
 //! # Features
 //!
 //! * Iterator-based, non-allocating parser
-//! * Supports the entire spec as well as vanilla client quirks (such as handling
+//! * Supports `#![no_std]` usage (with `default-features` set to `false`)
+//! * Implements the entire spec as well as vanilla client quirks (such as handling
 //!   of whitespace with the `STRIKETHROUGH` style)
 //! * Helpers for pretty-printing the parsed `Span`s to the terminal
 //! * Support for parsing any start character for the formatting codes (vanilla
@@ -43,9 +44,21 @@
 //! [legacy_fmt]: https://wiki.vg/Chat#Colors
 //! [SpanIter]: struct.SpanIter.html
 
-use std::str::CharIndices;
+#![no_std]
+
+/// Bring `std` in for testing
+#[cfg(test)]
+extern crate std;
+
+use core::str::CharIndices;
 
 use bitflags::bitflags;
+
+#[cfg(feature = "color-print")]
+mod color_print;
+
+#[cfg(feature = "color-print")]
+pub use color_print::PrintSpanColored;
 
 /// An iterator that yields [`Span`][Span]s from an input string.
 ///
@@ -319,8 +332,8 @@ pub enum Span<'a> {
     Plain(&'a str),
 }
 
-impl<'a> std::fmt::Display for Span<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl<'a> core::fmt::Display for Span<'a> {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             Span::Styled { text, .. } => f.write_str(text),
             Span::StrikethroughWhitespace { num_chars, .. } => {
@@ -356,80 +369,6 @@ impl<'a> Span<'a> {
     }
 }
 
-/// A wrapper around `Span` that provides colored pretty-printing
-///
-/// # Examples
-///
-/// ```
-/// use mc_legacy_formatting::{SpanIter, PrintSpanColored};
-///
-/// let s = "§4This will be dark red §oand italic";
-/// let span_iter = SpanIter::new(s);
-///
-/// span_iter.map(PrintSpanColored::from).for_each(|s| print!("{}", s));
-/// println!();
-///
-/// // Output will look close to what you'd see in Minecraft (ignoring the font difference)
-/// ```
-pub struct PrintSpanColored<'a>(Span<'a>);
-
-impl<'a> From<Span<'a>> for PrintSpanColored<'a> {
-    fn from(s: Span<'a>) -> Self {
-        Self(s)
-    }
-}
-
-impl<'a> std::fmt::Display for PrintSpanColored<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        fn apply_color_and_styles(s: &str, color: Color, styles: Styles) -> colored::ColoredString {
-            use self::Styles as McStyles;
-            use colored::*;
-
-            let mut text = s.color(color);
-
-            if styles.contains(McStyles::BOLD) {
-                text = text.bold();
-            }
-
-            if styles.contains(McStyles::STRIKETHROUGH) {
-                text = text.strikethrough();
-            }
-
-            if styles.contains(McStyles::UNDERLINED) {
-                text = text.underline();
-            }
-
-            if styles.contains(McStyles::ITALIC) {
-                text = text.italic();
-            }
-
-            text
-        }
-
-        match self.0 {
-            Span::Styled {
-                text,
-                color,
-                styles,
-            } => {
-                let styled_text = apply_color_and_styles(text, color, styles);
-                f.write_fmt(format_args!("{}", styled_text))
-            }
-            Span::Plain(_) => f.write_fmt(format_args!("{}", self.0)),
-            Span::StrikethroughWhitespace {
-                num_chars,
-                color,
-                styles,
-            } => (0..num_chars).try_for_each(|_| {
-                f.write_fmt(format_args!(
-                    "{}",
-                    apply_color_and_styles("-", color, styles)
-                ))
-            }),
-        }
-    }
-}
-
 /// Various colors that a `Span` can have
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum Color {
@@ -454,29 +393,6 @@ pub enum Color {
 impl Default for Color {
     fn default() -> Self {
         Color::White
-    }
-}
-
-impl From<Color> for colored::Color {
-    fn from(c: Color) -> Self {
-        match c {
-            Color::Black => colored::Color::Black,
-            Color::DarkBlue => colored::Color::Blue,
-            Color::DarkGreen => colored::Color::Green,
-            Color::DarkAqua => colored::Color::Cyan,
-            Color::DarkRed => colored::Color::Red,
-            Color::DarkPurple => colored::Color::Magenta,
-            Color::Gold => colored::Color::Yellow,
-            Color::Gray => colored::Color::White,
-            Color::DarkGray => colored::Color::BrightBlack,
-            Color::Blue => colored::Color::BrightBlue,
-            Color::Green => colored::Color::BrightGreen,
-            Color::Aqua => colored::Color::BrightCyan,
-            Color::Red => colored::Color::BrightRed,
-            Color::LightPurple => colored::Color::BrightMagenta,
-            Color::Yellow => colored::Color::BrightYellow,
-            Color::White => colored::Color::BrightWhite,
-        }
     }
 }
 
@@ -564,6 +480,8 @@ impl Styles {
 mod test {
     use super::*;
     use pretty_assertions::assert_eq;
+    use std::vec;
+    use std::vec::Vec;
 
     fn spans(s: &str) -> Vec<Span> {
         SpanIter::new(s).collect()
