@@ -422,6 +422,126 @@ impl Color {
             _ => return None,
         })
     }
+
+    /// Get the correct foreground hex color string for a given color
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::Color;
+    /// assert_eq!(Color::Aqua.foreground_hex_str(), "#55ffff");
+    /// ```
+    pub const fn foreground_hex_str(&self) -> &'static str {
+        match self {
+            Color::Black => "#000000",
+            Color::DarkBlue => "#0000aa",
+            Color::DarkGreen => "#00aa00",
+            Color::DarkAqua => "#00aaaa",
+            Color::DarkRed => "#aa0000",
+            Color::DarkPurple => "#aa00aa",
+            Color::Gold => "#ffaa00",
+            Color::Gray => "#aaaaaa",
+            Color::DarkGray => "#555555",
+            Color::Blue => "#5555ff",
+            Color::Green => "#55ff55",
+            Color::Aqua => "#55ffff",
+            Color::Red => "#ff5555",
+            Color::LightPurple => "#ff55ff",
+            Color::Yellow => "#ffff55",
+            Color::White => "#ffffff",
+        }
+    }
+
+    /// Get the correct background hex color string for a given color
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::Color;
+    /// assert_eq!(Color::Aqua.background_hex_str(), "#153f3f");
+    /// ```
+    pub const fn background_hex_str(&self) -> &'static str {
+        match self {
+            Color::Black => "#000000",
+            Color::DarkBlue => "#00002a",
+            Color::DarkGreen => "#002a00",
+            Color::DarkAqua => "#002a2a",
+            Color::DarkRed => "#2a0000",
+            Color::DarkPurple => "#2a002a",
+            Color::Gold => "#2a2a00",
+            Color::Gray => "#2a2a2a",
+            Color::DarkGray => "#151515",
+            Color::Blue => "#15153f",
+            Color::Green => "#153f15",
+            Color::Aqua => "#153f3f",
+            Color::Red => "#3f1515",
+            Color::LightPurple => "#3f153f",
+            Color::Yellow => "#3f3f15",
+            Color::White => "#3f3f3f",
+        }
+    }
+
+    /// Get the correct foreground RGB color values for a given color
+    ///
+    /// Returns (red, green, blue)
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::Color;
+    /// assert_eq!(Color::Aqua.foreground_rgb(), (85, 255, 255));
+    /// ```
+    pub const fn foreground_rgb(&self) -> (u8, u8, u8) {
+        match self {
+            Color::Black => (0, 0, 0),
+            Color::DarkBlue => (0, 0, 170),
+            Color::DarkGreen => (0, 170, 0),
+            Color::DarkAqua => (0, 170, 170),
+            Color::DarkRed => (170, 0, 0),
+            Color::DarkPurple => (170, 0, 170),
+            Color::Gold => (255, 170, 0),
+            Color::Gray => (170, 170, 170),
+            Color::DarkGray => (85, 85, 85),
+            Color::Blue => (85, 85, 255),
+            Color::Green => (85, 255, 85),
+            Color::Aqua => (85, 255, 255),
+            Color::Red => (255, 85, 85),
+            Color::LightPurple => (255, 85, 255),
+            Color::Yellow => (255, 255, 85),
+            Color::White => (255, 255, 255),
+        }
+    }
+
+    /// Get the correct background RGB color values for a given color
+    ///
+    /// Returns (red, green, blue)
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mc_legacy_formatting::Color;
+    /// assert_eq!(Color::Aqua.background_rgb(), (21, 63, 63));
+    /// ```
+    pub const fn background_rgb(&self) -> (u8, u8, u8) {
+        match self {
+            Color::Black => (0, 0, 0),
+            Color::DarkBlue => (0, 0, 42),
+            Color::DarkGreen => (0, 42, 0),
+            Color::DarkAqua => (0, 42, 42),
+            Color::DarkRed => (42, 0, 0),
+            Color::DarkPurple => (42, 0, 42),
+            Color::Gold => (42, 42, 0),
+            Color::Gray => (42, 42, 42),
+            Color::DarkGray => (21, 21, 21),
+            Color::Blue => (21, 21, 63),
+            Color::Green => (21, 63, 21),
+            Color::Aqua => (21, 63, 63),
+            Color::Red => (63, 21, 21),
+            Color::LightPurple => (63, 21, 63),
+            Color::Yellow => (63, 63, 21),
+            Color::White => (63, 63, 63),
+        }
+    }
 }
 
 bitflags! {
