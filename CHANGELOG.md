@@ -4,6 +4,14 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 ## [Unreleased]
 
+### Added
+
+* Server list ping example demonstrating a real-world usecase for the crate
+
+### Internal
+
+* Created `test-helper` utility crate to make creating test cases faster
+
 ## [0.2.0] - 2020-10-20
 
 ### Added

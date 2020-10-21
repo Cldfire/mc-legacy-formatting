@@ -1,0 +1,12 @@
+[package]
+name = "test-helper"
+version = "0.1.0"
+authors = ["Cldfire <cldfire3@gmail.com>"]
+edition = "2018"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+mc-legacy-formatting = { path = "../mc-legacy-formatting" }
+dialoguer = "0.7"
