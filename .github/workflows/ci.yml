@@ -26,10 +26,9 @@ jobs:
           profile: minimal
           toolchain: stable
           target: thumbv7m-none-eabi
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target thumbv7m-none-eabi --no-default-features
+      - run: |
+          cd mc-legacy-formatting
+          cargo build --target thumbv7m-none-eabi --no-default-features
 
   test:
     name: Test
