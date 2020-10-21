@@ -374,6 +374,7 @@ pub enum Span<'a> {
 impl<'a> core::fmt::Display for Span<'a> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
+            // TODO: handle random style
             Span::Styled { text, .. } => f.write_str(text),
             Span::StrikethroughWhitespace { num_chars, .. } => {
                 (0..*num_chars).try_for_each(|_| f.write_str("-"))

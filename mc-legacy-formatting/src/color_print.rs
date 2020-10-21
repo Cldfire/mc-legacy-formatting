@@ -29,6 +29,8 @@ impl<'a> core::fmt::Display for PrintSpanColored<'a> {
 
             let mut text = s.color(color);
 
+            // TODO: handle random style
+
             if styles.contains(McStyles::BOLD) {
                 text = text.bold();
             }
