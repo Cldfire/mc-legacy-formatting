@@ -239,56 +239,56 @@ impl<'a> Iterator for SpanIter<'a> {
     type Item = Span<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
+        use GatheringStylesState::*;
+        use GatheringTextState::*;
+        use SpanIterState::*;
+
         if self.finished {
             return None;
         }
-        let mut state = SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar);
+        let mut state = GatheringStyles(ExpectingStartChar);
         let mut span_start = None;
         let mut span_end = None;
 
         while let Some((idx, c)) = self.chars.next() {
             state = match state {
-                SpanIterState::GatheringStyles(style_state) => match style_state {
-                    GatheringStylesState::ExpectingStartChar => {
+                GatheringStyles(style_state) => match style_state {
+                    ExpectingStartChar => {
                         span_start = Some(idx);
                         match c {
-                            c if c == self.start_char => SpanIterState::GatheringStyles(
-                                GatheringStylesState::ExpectingFmtCode,
-                            ),
-                            _ => SpanIterState::GatheringText(
-                                GatheringTextState::WaitingForStartChar,
-                            ),
+                            c if c == self.start_char => GatheringStyles(ExpectingFmtCode),
+                            _ => GatheringText(WaitingForStartChar),
                         }
                     }
-                    GatheringStylesState::ExpectingFmtCode => {
+                    ExpectingFmtCode => {
                         if let Some(color) = Color::from_char(c) {
                             self.update_color(color);
                             span_start = None;
-                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                            GatheringStyles(ExpectingStartChar)
                         } else if let Some(style) = Styles::from_char(c) {
                             self.update_styles(style);
                             span_start = None;
-                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                            GatheringStyles(ExpectingStartChar)
                         } else if c == 'r' || c == 'R' {
                             // Handle the `RESET` fmt code
 
                             self.reset_styles();
                             span_start = None;
-                            SpanIterState::GatheringStyles(GatheringStylesState::ExpectingStartChar)
+                            GatheringStyles(ExpectingStartChar)
                         } else {
-                            SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
+                            GatheringText(WaitingForStartChar)
                         }
                     }
                 },
-                SpanIterState::GatheringText(text_state) => match text_state {
-                    GatheringTextState::WaitingForStartChar => match c {
+                GatheringText(text_state) => match text_state {
+                    WaitingForStartChar => match c {
                         c if c == self.start_char => {
                             span_end = Some(idx);
-                            SpanIterState::GatheringText(GatheringTextState::ExpectingEndChar)
+                            GatheringText(ExpectingEndChar)
                         }
                         _ => state,
                     },
-                    GatheringTextState::ExpectingEndChar => {
+                    ExpectingEndChar => {
                         // Note that we only end this iteration if we find a valid fmt code
                         //
                         // If we do, we make sure to apply it to our state so that we can
@@ -310,7 +310,7 @@ impl<'a> Iterator for SpanIter<'a> {
                             return Some(span);
                         } else {
                             span_end = None;
-                            SpanIterState::GatheringText(GatheringTextState::WaitingForStartChar)
+                            GatheringText(WaitingForStartChar)
                         }
                     }
                 },

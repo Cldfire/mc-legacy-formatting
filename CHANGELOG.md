@@ -15,7 +15,6 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 * `Span` now implements `Copy`
 
-
 ## [0.1.2] - 2020-10-19
 
 ### Fixed
