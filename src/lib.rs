@@ -998,7 +998,8 @@ mod test {
 
     #[test]
     fn avoids_incorrect_whitespace_strikethrough() {
-        let s = "§f§b§lMINE§6§lHEROES §7- §astore.mineheroes.net§a §2§l[75% Sale]\n§b§lSKYBLOCK §f§l+ §2§lKRYPTON §f§lRESET! §f§l- §6§lNEW FALL CRATE";
+        let s = "§f§b§lMINE§6§lHEROES §7- §astore.mineheroes.net§a §2§l[75% Sale]\n\
+                §b§lSKYBLOCK §f§l+ §2§lKRYPTON §f§lRESET! §f§l- §6§lNEW FALL CRATE";
         assert_eq!(
             spans(s),
             vec![
@@ -1016,6 +1017,42 @@ mod test {
                 Span::new_styled("RESET! ", Color::White, Styles::BOLD),
                 Span::new_styled("- ", Color::White, Styles::BOLD),
                 Span::new_styled("NEW FALL CRATE", Color::Gold, Styles::BOLD)
+            ]
+        );
+    }
+
+    #[test]
+    fn no_whitespace_strikethrough_involving_newline() {
+        // TODO: investigate if \n resets styles
+        let s = "§4§l§m⌜--------------------⌝\n   §4§lBLAZE§b-§6§lGAMING§b Network\n\n        \
+                §bwww.mc-blaze.com\n            §8[§4116§7 /§4 1000§8]\n§4§l§m⌞--------------------⌟";
+        assert_eq!(
+            spans(s),
+            vec![
+                Span::new_styled(
+                    "⌜--------------------⌝\n   ",
+                    Color::DarkRed,
+                    Styles::BOLD | Styles::STRIKETHROUGH
+                ),
+                Span::new_styled("BLAZE", Color::DarkRed, Styles::BOLD),
+                Span::new_styled("-", Color::Aqua, Styles::empty()),
+                Span::new_styled("GAMING", Color::Gold, Styles::BOLD),
+                Span::new_styled(" Network\n\n        ", Color::Aqua, Styles::empty()),
+                Span::new_styled(
+                    "www.mc-blaze.com\n            ",
+                    Color::Aqua,
+                    Styles::empty()
+                ),
+                Span::new_styled("[", Color::DarkGray, Styles::empty()),
+                Span::new_styled("116", Color::DarkRed, Styles::empty()),
+                Span::new_styled(" /", Color::Gray, Styles::empty()),
+                Span::new_styled(" 1000", Color::DarkRed, Styles::empty()),
+                Span::new_styled("]\n", Color::DarkGray, Styles::empty()),
+                Span::new_styled(
+                    "⌞--------------------⌟",
+                    Color::DarkRed,
+                    Styles::BOLD | Styles::STRIKETHROUGH
+                )
             ]
         );
     }
