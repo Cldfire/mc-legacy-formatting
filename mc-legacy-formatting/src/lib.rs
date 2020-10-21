@@ -186,6 +186,16 @@ impl<'a> SpanIter<'a> {
 
             // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
             // as a solid line. This replicates that behavior
+            //
+            // TODO: in the future it may be useful to make it configurable
+            // whether or not this variant gets generated. It's helpful in most
+            // scenarios, but if attempting to reach pixel-perfect accuracy it
+            // will make things harder
+            //
+            // TODO: the vanilla client technically just draws a line over any
+            // sequence of text with the `STRIKETHROUGH` style. For instance,
+            // `§4§l§m----           --` would be drawn effectively as
+            // `-----------------`
             if text.chars().all(|c| c.is_ascii_whitespace())
                 && self.styles.contains(Styles::STRIKETHROUGH)
             {

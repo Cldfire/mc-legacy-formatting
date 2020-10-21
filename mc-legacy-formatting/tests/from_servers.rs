@@ -110,7 +110,9 @@ fn avoids_incorrect_whitespace_strikethrough() {
 
 #[test]
 fn no_whitespace_strikethrough_involving_newline() {
-    // TODO: investigate if \n resets styles
+    // Experimentation has shown the \n does not reset styles in any way in the vanilla
+    // client (the vanilla client renders this far worse than we do, at least when used
+    // in place of the player sample)
     let s = "§4§l§m⌜--------------------⌝\n   §4§lBLAZE§b-§6§lGAMING§b Network\n\n        \
             §bwww.mc-blaze.com\n            §8[§4116§7 /§4 1000§8]\n§4§l§m⌞--------------------⌟";
     assert_eq!(
