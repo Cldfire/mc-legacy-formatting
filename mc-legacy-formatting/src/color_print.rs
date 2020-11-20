@@ -1,6 +1,6 @@
 use crate::{Color, Span, Styles};
 
-/// A wrapper around `Span` that provides colored pretty-printing
+/// A wrapper around [`Span`] that provides colored pretty-printing
 ///
 /// # Examples
 ///

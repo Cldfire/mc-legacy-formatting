@@ -7,13 +7,13 @@
 //! * Supports `#![no_std]` usage (with `default-features` set to `false`)
 //! * Implements the entire spec as well as vanilla client quirks (such as handling
 //!   of whitespace with the `STRIKETHROUGH` style)
-//! * Helpers for pretty-printing the parsed `Span`s to the terminal
+//! * Helpers for pretty-printing the parsed [`Span`]s to the terminal
 //! * Support for parsing any start character for the formatting codes (vanilla
 //!   uses `§` while many community tools use `&`)
 //!
 //! # Examples
 //!
-//! Using [`SpanIter`][SpanIter]:
+//! Using [`SpanIter`]:
 //!
 //! ```
 //! use mc_legacy_formatting::{SpanExt, Span, Color, Styles};
@@ -42,7 +42,6 @@
 //! ```
 //!
 //! [legacy_fmt]: https://wiki.vg/Chat#Colors
-//! [SpanIter]: struct.SpanIter.html
 
 #![no_std]
 #![deny(missing_docs)]
@@ -62,9 +61,9 @@ mod color_print;
 #[cfg(feature = "color-print")]
 pub use color_print::PrintSpanColored;
 
-/// An extension trait that adds a method for creating a `SpanIter`
+/// An extension trait that adds a method for creating a [`SpanIter`]
 pub trait SpanExt {
-    /// Produces a `SpanIter` from `&self`
+    /// Produces a [`SpanIter`] from `&self`
     ///
     /// # Examples
     ///
@@ -87,7 +86,7 @@ impl<T: AsRef<str>> SpanExt for T {
     }
 }
 
-/// An iterator that yields [`Span`][Span]s from an input string.
+/// An iterator that yields [`Span`]s from an input string.
 ///
 /// # Examples
 ///
@@ -101,8 +100,6 @@ impl<T: AsRef<str>> SpanExt for T {
 /// assert_eq!(span_iter.next().unwrap(), Span::new_styled("and italic", Color::DarkRed, Styles::ITALIC));
 /// assert!(span_iter.next().is_none());
 /// ```
-///
-/// [Span]: enum.Span.html
 #[derive(Debug, Clone)]
 pub struct SpanIter<'a> {
     buf: &'a str,
@@ -118,7 +115,7 @@ pub struct SpanIter<'a> {
 }
 
 impl<'a> SpanIter<'a> {
-    /// Create a new `SpanIter` to parse the given string
+    /// Create a new [`SpanIter`] to parse the given string
     pub fn new(s: &'a str) -> Self {
         Self {
             buf: s,
@@ -175,7 +172,7 @@ impl<'a> SpanIter<'a> {
         self.styles = Styles::empty();
     }
 
-    /// Make a `Span` based off the current state of the iterator
+    /// Make a [`Span`] based off the current state of the iterator
     ///
     /// The span will be from `start..end`
     fn make_span(&self, start: usize, end: usize) -> Span<'a> {
@@ -327,7 +324,7 @@ impl<'a> Iterator for SpanIter<'a> {
 
 /// Text with an associated color and associated styles.
 ///
-/// `Span` implements `Display` and can be neatly printed.
+/// [`Span`] implements [`Display`](core::fmt::Display) and can be neatly printed.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Span<'a> {
     /// A styled slice of text
@@ -339,8 +336,8 @@ pub enum Span<'a> {
         /// Styles that should be applied to the text
         styles: Styles,
     },
-    /// An unbroken sequence of whitespace that was given the `STRIKETHROUGH`
-    /// style.
+    /// An unbroken sequence of whitespace that was given the
+    /// [`STRIKETHROUGH`](Styles::STRIKETHROUGH) style.
     ///
     /// The vanilla client renders whitespace with the `STRIKETHROUGH` style
     /// as a solid line; this variant allows for replicating that behavior.
@@ -350,13 +347,13 @@ pub enum Span<'a> {
         /// The color of the whitespace (and therefore the line over it)
         color: Color,
         /// Styles applied to the whitespace (will contain at least
-        /// `STRIKETHROUGH`)
+        /// [`STRIKETHROUGH`](Styles::STRIKETHROUGH))
         styles: Styles,
     },
     /// An unstyled slice of text
     ///
     /// This should be given a default style. The vanilla client
-    /// would use `color::White` and `Styles::empty()`.
+    /// would use [`Color::White`] and [`Styles::empty()`].
     Plain(&'a str),
 }
 
@@ -374,12 +371,12 @@ impl<'a> core::fmt::Display for Span<'a> {
 }
 
 impl<'a> Span<'a> {
-    /// Create a new `Span::Plain`
+    /// Create a new [`Span::Plain`]
     pub fn new_plain(s: &'a str) -> Self {
         Span::Plain(s)
     }
 
-    /// Create a new `Span::StrikethroughWhitespace`
+    /// Create a new [`Span::StrikethroughWhitespace`]
     pub fn new_strikethrough_whitespace(s: &'a str, color: Color, styles: Styles) -> Self {
         Span::StrikethroughWhitespace {
             text: s,
@@ -388,7 +385,7 @@ impl<'a> Span<'a> {
         }
     }
 
-    /// Create a new `Span::Styled`
+    /// Create a new [`Span::Styled`]
     pub fn new_styled(s: &'a str, color: Color, styles: Styles) -> Self {
         Span::Styled {
             text: s,
@@ -397,14 +394,14 @@ impl<'a> Span<'a> {
         }
     }
 
-    /// Wraps this `Span` in a type that enables colored printing
+    /// Wraps this [`Span`] in a type that enables colored printing
     #[cfg(feature = "color-print")]
     pub fn wrap_colored(self) -> PrintSpanColored<'a> {
         PrintSpanColored::from(self)
     }
 }
 
-/// Various colors that a `Span` can have.
+/// Various colors that a [`Span`] can have.
 ///
 /// See [the wiki.vg docs][colors] for specific information.
 ///
@@ -437,9 +434,9 @@ impl Default for Color {
 }
 
 impl Color {
-    /// Map a `char` to a `Color`.
+    /// Map a `char` to a [`Color`].
     ///
-    /// Returns `None` if `c` didn't map to a `Color`.
+    /// Returns [`None`] if `c` didn't map to a [`Color`].
     pub fn from_char(c: char) -> Option<Self> {
         Some(match c {
             '0' => Color::Black,
@@ -585,9 +582,9 @@ impl Color {
 }
 
 bitflags! {
-    /// Styles that can be combined and applied to a `Span`.
+    /// Styles that can be combined and applied to a [`Span`].
     ///
-    /// The `RESET` flag is missing because the parser implemented in `SpanIter`
+    /// The `RESET` flag is missing because the parser implemented in [`SpanIter`]
     /// takes care of it for you.
     ///
     /// See [wiki.vg's docs][styles] for detailed info about each style.
@@ -620,9 +617,9 @@ bitflags! {
 }
 
 impl Styles {
-    /// Map a `char` to a `Styles` object.
+    /// Map a `char` to a [`Styles`] object.
     ///
-    /// Returns `None` if `c` didn't map to a `Styles` object.
+    /// Returns [`None`] if `c` didn't map to a [`Styles`] object.
     pub fn from_char(c: char) -> Option<Self> {
         Some(match c {
             // The vanilla client accepts lower or uppercase interchangeably

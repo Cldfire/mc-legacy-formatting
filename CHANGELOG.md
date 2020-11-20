@@ -7,6 +7,7 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 ### Added
 
 * Server list ping example demonstrating a real-world usecase for the crate
+* Intra-doc links for most symbols in the generated documentation
 
 ### Changed
 
