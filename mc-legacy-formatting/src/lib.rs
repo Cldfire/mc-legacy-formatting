@@ -187,20 +187,13 @@ impl<'a> SpanIter<'a> {
             // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
             // as a solid line. This replicates that behavior
             //
-            // TODO: in the future it may be useful to make it configurable
-            // whether or not this variant gets generated. It's helpful in most
-            // scenarios, but if attempting to reach pixel-perfect accuracy it
-            // will make things harder
-            //
-            // TODO: the vanilla client technically just draws a line over any
-            // sequence of text with the `STRIKETHROUGH` style. For instance,
-            // `§4§l§m----           --` would be drawn effectively as
-            // `-----------------`
+            // (Technically it does this by drawing a line over any text slice
+            // with the `STRIKETHROUGH` style.)
             if text.chars().all(|c| c.is_ascii_whitespace())
                 && self.styles.contains(Styles::STRIKETHROUGH)
             {
                 Span::StrikethroughWhitespace {
-                    num_chars: text.len(),
+                    text,
                     color: self.color,
                     styles: self.styles,
                 }
@@ -352,15 +345,11 @@ pub enum Span<'a> {
     /// The vanilla client renders whitespace with the `STRIKETHROUGH` style
     /// as a solid line; this variant allows for replicating that behavior.
     StrikethroughWhitespace {
-        /// The number of whitespace characters this span is in place of.
-        ///
-        /// You should draw `num_chars` dashes to represent the line (or,
-        /// if your rendering situation allows for it, a solid line of
-        /// `num_chars` length).
-        num_chars: usize,
-        /// The color of the line
+        /// The styled whitespace slice
+        text: &'a str,
+        /// The color of the whitespace (and therefore the line over it)
         color: Color,
-        /// Styles applied to the line (will contain at least
+        /// Styles applied to the whitespace (will contain at least
         /// `STRIKETHROUGH`)
         styles: Styles,
     },
@@ -376,8 +365,8 @@ impl<'a> core::fmt::Display for Span<'a> {
         match self {
             // TODO: handle random style
             Span::Styled { text, .. } => f.write_str(text),
-            Span::StrikethroughWhitespace { num_chars, .. } => {
-                (0..*num_chars).try_for_each(|_| f.write_str("-"))
+            Span::StrikethroughWhitespace { text, .. } => {
+                (0..text.len()).try_for_each(|_| f.write_str("-"))
             }
             Span::Plain(text) => f.write_str(text),
         }
@@ -391,9 +380,9 @@ impl<'a> Span<'a> {
     }
 
     /// Create a new `Span::StrikethroughWhitespace`
-    pub fn new_strikethrough_whitespace(num_chars: usize, color: Color, styles: Styles) -> Self {
+    pub fn new_strikethrough_whitespace(s: &'a str, color: Color, styles: Styles) -> Self {
         Span::StrikethroughWhitespace {
-            num_chars,
+            text: s,
             color,
             styles,
         }

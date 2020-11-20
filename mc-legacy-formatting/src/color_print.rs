@@ -61,10 +61,10 @@ impl<'a> core::fmt::Display for PrintSpanColored<'a> {
             }
             Span::Plain(_) => f.write_fmt(format_args!("{}", self.0)),
             Span::StrikethroughWhitespace {
-                num_chars,
+                text,
                 color,
                 styles,
-            } => (0..num_chars).try_for_each(|_| {
+            } => (0..text.len()).try_for_each(|_| {
                 f.write_fmt(format_args!(
                     "{}",
                     apply_color_and_styles("-", color, styles)

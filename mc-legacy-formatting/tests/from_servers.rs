@@ -61,7 +61,11 @@ fn purple_wtf() {
         vec![
             // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
             // as a solid line.
-            Span::new_strikethrough_whitespace(18, Color::DarkPurple, Styles::STRIKETHROUGH),
+            Span::new_strikethrough_whitespace(
+                "                  ",
+                Color::DarkPurple,
+                Styles::STRIKETHROUGH
+            ),
             Span::new_styled(">", Color::Gold, Styles::empty()),
             Span::new_styled(">", Color::Gold, Styles::BOLD),
             Span::new_styled("[", Color::Gold, Styles::BOLD),
@@ -70,7 +74,11 @@ fn purple_wtf() {
             Span::new_styled("]", Color::Gold, Styles::BOLD),
             Span::new_styled("<", Color::Gold, Styles::BOLD),
             Span::new_styled("<", Color::Gold, Styles::empty()),
-            Span::new_strikethrough_whitespace(21, Color::DarkPurple, Styles::STRIKETHROUGH),
+            Span::new_strikethrough_whitespace(
+                "                     ",
+                Color::DarkPurple,
+                Styles::STRIKETHROUGH
+            ),
             Span::new_plain(" "),
             Span::new_styled("              (", Color::Gray, Styles::empty()),
             Span::new_styled("!", Color::DarkRed, Styles::empty()),
