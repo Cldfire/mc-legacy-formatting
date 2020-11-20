@@ -25,12 +25,12 @@ fn main() {
             handle_styles(styles)
         ),
         Span::StrikethroughWhitespace {
-            num_chars,
+            text,
             color,
             styles,
         } => println!(
-            "\tSpan::new_strikethrough_whitespace({}, Color::{:?}, {}),",
-            num_chars,
+            "\tSpan::new_strikethrough_whitespace(\"{}\", Color::{:?}, {}),",
+            text,
             color,
             handle_styles(styles)
         ),

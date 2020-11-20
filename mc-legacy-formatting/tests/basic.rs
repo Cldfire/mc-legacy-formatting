@@ -118,38 +118,6 @@ mod custom_start_char {
             ]
         );
     }
-
-    #[test]
-    fn supports_uppercase_style_codes() {
-        let s = "&5&m                  &6>&7&l&6&l>&6&l[&5&l&oPurple &8&l&oPrison&6&l]&6&l<&6<&5&m                     \
-                    &R &7              (&4!&7) &e&lSERVER HAS &D&LRESET! &7(&4!&7)";
-        assert_eq!(
-            spans_sc('&', s),
-            vec![
-                // The vanilla client renders whitespace with `Styles::STRIKETHROUGH`
-                // as a solid line.
-                Span::new_strikethrough_whitespace(18, Color::DarkPurple, Styles::STRIKETHROUGH),
-                Span::new_styled(">", Color::Gold, Styles::empty()),
-                Span::new_styled(">", Color::Gold, Styles::BOLD),
-                Span::new_styled("[", Color::Gold, Styles::BOLD),
-                Span::new_styled("Purple ", Color::DarkPurple, Styles::BOLD | Styles::ITALIC),
-                Span::new_styled("Prison", Color::DarkGray, Styles::BOLD | Styles::ITALIC),
-                Span::new_styled("]", Color::Gold, Styles::BOLD),
-                Span::new_styled("<", Color::Gold, Styles::BOLD),
-                Span::new_styled("<", Color::Gold, Styles::empty()),
-                Span::new_strikethrough_whitespace(21, Color::DarkPurple, Styles::STRIKETHROUGH),
-                Span::new_plain(" "),
-                Span::new_styled("              (", Color::Gray, Styles::empty()),
-                Span::new_styled("!", Color::DarkRed, Styles::empty()),
-                Span::new_styled(") ", Color::Gray, Styles::empty()),
-                Span::new_styled("SERVER HAS ", Color::Yellow, Styles::BOLD),
-                Span::new_styled("RESET! ", Color::LightPurple, Styles::BOLD),
-                Span::new_styled("(", Color::Gray, Styles::empty()),
-                Span::new_styled("!", Color::DarkRed, Styles::empty()),
-                Span::new_styled(")", Color::Gray, Styles::empty()),
-            ]
-        );
-    }
 }
 
 #[test]

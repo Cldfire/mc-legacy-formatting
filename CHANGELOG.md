@@ -8,6 +8,11 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 * Server list ping example demonstrating a real-world usecase for the crate
 
+### Changed
+
+* `Span::StrikethroughWhitespace` now contains the `text` string slice it's wrapping instead of the number of whitespace characters
+  * I realized while writing code on top of this library that omitting the string slice made it impossible to build a wrapper API over this crate that is also based on string slices
+
 ### Internal
 
 * Created `test-helper` utility crate to make creating test cases faster
