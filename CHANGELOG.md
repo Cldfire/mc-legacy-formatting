@@ -19,6 +19,7 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 * Created `test-helper` utility crate to make creating test cases faster
 * Changed CI workflow to avoid running jobs twice for pull requests
 * Changed audit workflow to only run on PRs when necessary
+* Added job to check MSRV in CI (which is currently 1.48 due to usage of intra-doc links)
 
 ## [0.2.0] - 2020-10-20
 

@@ -50,6 +50,10 @@ assert!(span_iter.next().is_none());
 
 [legacy_fmt]: https://wiki.vg/Chat#Colors
 
+## MSRV
+
+The Minimum Supported Rust Version is currently 1.48.0. This will be bumped to the latest stable version of Rust when needed.
+
 #### License
 
 <sup>
