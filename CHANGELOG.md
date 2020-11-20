@@ -4,6 +4,13 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 ## [Unreleased]
 
+## [0.3.1] - 2020-11-19
+
+### Changed
+
+* Fixed `Cargo.toml` so that the README will display properly on crates.io
+  * This got broken by the move to workspaces in the repo; see https://github.com/rust-lang/cargo/issues/5911
+
 ## [0.3.0] - 2020-11-19
 
 ### Added
@@ -50,7 +57,8 @@ Fixed some issues with the `Cargo.toml` metadata after the initial publish.
 
 Initial release.
 
-[Unreleased]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.2...0.2.0
 [0.1.2]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.1...0.1.2

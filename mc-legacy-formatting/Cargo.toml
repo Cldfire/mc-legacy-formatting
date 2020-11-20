@@ -1,12 +1,18 @@
 [package]
 name = "mc-legacy-formatting"
-version = "0.3.0"
+version = "0.3.1"
 license = "MIT OR Apache-2.0"
 authors = ["Cldfire <cldfire3@gmail.com>"]
 repository = "https://github.com/Cldfire/mc-legacy-formatting"
 description = "A non-allocating parser for Minecraft's legacy formatting system"
 keywords = ["minecraft", "ping", "server", "color", "code"]
 categories = ["game-development", "no-std", "parser-implementations"]
+# Unfortunately Cargo makes it difficult to include README / CHANGELOG files at the root
+# in the package when workspaces are involved: https://github.com/rust-lang/cargo/issues/5911
+#
+# It looks like there's literally no way to get cargo to include anything outside the
+# crate directory in the package :(
+readme = "../README.md"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
