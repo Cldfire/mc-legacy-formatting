@@ -4,6 +4,8 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-11-19
+
 ### Added
 
 * Server list ping example demonstrating a real-world usecase for the crate
@@ -48,7 +50,8 @@ Fixed some issues with the `Cargo.toml` metadata after the initial publish.
 
 Initial release.
 
-[Unreleased]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.2...0.2.0
 [0.1.2]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/Cldfire/mc-legacy-formatting/compare/0.1.0...0.1.1
