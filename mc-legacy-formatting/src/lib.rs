@@ -111,7 +111,6 @@ pub struct SpanIter<'a> {
     start_char: char,
     color: Color,
     styles: Styles,
-    finished: bool,
 }
 
 impl<'a> SpanIter<'a> {
@@ -123,7 +122,6 @@ impl<'a> SpanIter<'a> {
             start_char: '§',
             color: Color::White,
             styles: Styles::default(),
-            finished: false,
         }
     }
 
@@ -243,9 +241,6 @@ impl<'a> Iterator for SpanIter<'a> {
         use GatheringTextState::*;
         use SpanIterState::*;
 
-        if self.finished {
-            return None;
-        }
         let mut state = GatheringStyles(ExpectingStartChar);
         let mut span_start = None;
         let mut span_end = None;
@@ -317,7 +312,6 @@ impl<'a> Iterator for SpanIter<'a> {
             }
         }
 
-        self.finished = true;
         span_start.map(|start| self.make_span(start, self.buf.len()))
     }
 }

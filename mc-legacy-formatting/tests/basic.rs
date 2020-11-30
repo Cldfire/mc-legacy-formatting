@@ -2,7 +2,7 @@ mod common;
 
 use common::*;
 
-use mc_legacy_formatting::{Color, Span, Styles};
+use mc_legacy_formatting::{Color, Span, SpanIter, Styles};
 
 mod fake_codes {
     use super::*;
@@ -228,4 +228,16 @@ fn multiline_message() {
             Span::new_styled("gameplay!", Color::DarkGray, Styles::ITALIC)
         ]
     );
+}
+
+#[test]
+fn yields_none_after_finish() {
+    let s = "§lthis will be bold §o§mand this will be bold, italic, and strikethrough";
+    let mut iter = SpanIter::new(s);
+
+    while let Some(_) = iter.next() {}
+
+    for _ in 0..20 {
+        assert!(iter.next().is_none());
+    }
 }
