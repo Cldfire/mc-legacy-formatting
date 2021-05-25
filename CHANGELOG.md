@@ -7,6 +7,7 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 ### Internal
 
 * `SpanIter` no longer keeps track of a `finished` flag as it was unnecessary
+* Updated dependencies
 
 ## [0.3.1] - 2020-11-19
 

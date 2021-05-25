@@ -9,7 +9,7 @@ fn main() -> Result<(), anyhow::Error> {
         .with_prompt("Minecraft server address")
         .interact()?;
 
-    let (_, status) = mcping::get_status(&server_address)?;
+    let (_, status) = mcping::get_status(&server_address, None)?;
     let description = status.description.text();
 
     print!("version: ");

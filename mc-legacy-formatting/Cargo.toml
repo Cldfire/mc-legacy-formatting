@@ -22,10 +22,10 @@ bitflags = "1.2"
 colored = { version = "2.0", optional = true }
 
 [dev-dependencies]
-pretty_assertions = "0.6"
+pretty_assertions = "0.7"
 anyhow = "1.0"
-mcping = "0.1"
-dialoguer = "0.7"
+mcping = "0.2"
+dialoguer = "0.8"
 
 [features]
 default = ["color-print"]
