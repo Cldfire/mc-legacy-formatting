@@ -65,18 +65,18 @@ impl Default for PresetText {
 impl PresetText {
     fn text(&self) -> &'static str {
         match self {
-            PresetText::Simple => return "&6This is gold! &aThis is green!",
-            PresetText::HypixelMotd => return "             &aHypixel Network  &c[1.8-1.17]\n          &5&lSKYBLOCK CRYSTAL HOLLOWS!",
-            PresetText::MineheroesMotd => return "&f&b&lMINE&6&lHEROES &7- &astore.mineheroes.net&a &2&l[75% Sale]\n\
+            PresetText::Simple => "&6This is gold! &aThis is green!",
+            PresetText::HypixelMotd => "             &aHypixel Network  &c[1.8-1.17]\n          &5&lSKYBLOCK CRYSTAL HOLLOWS!",
+            PresetText::MineheroesMotd => "&f&b&lMINE&6&lHEROES &7- &astore.mineheroes.net&a &2&l[75% Sale]\n\
                 &b&lSKYBLOCK &f&l+ &2&lKRYPTON &f&lRESET! &f&l- &6&lNEW FALL CRATE",
         }
     }
 
     fn menu_text(&self) -> &'static str {
         match self {
-            PresetText::Simple => return "Simple",
-            PresetText::HypixelMotd => return "Hypixel MOTD",
-            PresetText::MineheroesMotd => return "Mineheroes MOTD",
+            PresetText::Simple => "Simple",
+            PresetText::HypixelMotd => "Hypixel MOTD",
+            PresetText::MineheroesMotd => "Mineheroes MOTD",
         }
     }
 }
