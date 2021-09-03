@@ -9,6 +9,8 @@
 A parser for Minecraft's [legacy formatting system][legacy_fmt], created
 with careful attention to the quirks of the vanilla client's implementation.
 
+[Try it online!](https://cldfire.github.io/mc-legacy-formatting/)
+
 ## Features
 
 * Iterator-based, non-allocating parser
