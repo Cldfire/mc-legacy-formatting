@@ -292,6 +292,9 @@ impl epi::App for EditorApp {
                     .show(ui, |ui| {
                         rows_for_guide_tables(ui, STYLE_GUIDE_ROWS);
                     });
+
+                ui.add_space(20.0);
+                ui.hyperlink_to("Learn more about Minecraft's legacy formatting codes.", "https://wiki.vg/Chat#Colors");
             });
         });
     }

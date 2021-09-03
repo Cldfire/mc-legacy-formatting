@@ -48,7 +48,13 @@ assert_eq!(span_iter.next().unwrap(), Span::new_styled("§", Color::Aqua, Styles
 assert!(span_iter.next().is_none());
 ```
 
-[legacy_fmt]: https://wiki.vg/Chat#Colors
+### `editor-gui`
+
+The [editor-gui](./editor-gui) folder contains a small Rust GUI program built on top of [egui](https://github.com/emilk/egui). This program runs both natively and on the web, providing a side-by-side editor experience that allows you to enter text using legacy format codes (prefixed by `&`) and instantly see the formatted output on the right-hand side.
+
+[Try it online](https://cldfire.github.io/mc-legacy-formatting/) or see the [editor-gui README file](./editor-gui/README.md) for instructions on building it locally.
+
+![screenshot of the editor-gui running natively and in a web browser side-by-side](./editor-gui/screenshot.png)
 
 ## MSRV
 
@@ -68,3 +74,5 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
 be dual licensed as above, without any additional terms or conditions.
 </sub>
+
+[legacy_fmt]: https://wiki.vg/Chat#Colors
