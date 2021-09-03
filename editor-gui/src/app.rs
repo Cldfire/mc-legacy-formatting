@@ -283,23 +283,27 @@ impl epi::App for EditorApp {
                     });
             });
             ui.collapsing("Guide", |ui| {
-                ui.label("Style text by prefixing strings with &{code}. Here are color codes that can be used:");
-                egui::Grid::new("color_guide_grid")
-                    .striped(true)
-                    .show(ui, |ui| {
-                        rows_for_guide_tables(ui, COLOR_GUIDE_ROWS);
-                    });
-
-                ui.add_space(20.0);
-                ui.label("Text can also be styled using style codes:");
-                egui::Grid::new("style_guide_grid")
-                    .striped(true)
-                    .show(ui, |ui| {
-                        rows_for_guide_tables(ui, STYLE_GUIDE_ROWS);
-                    });
-
-                ui.add_space(20.0);
-                ui.hyperlink_to("Learn more about Minecraft's legacy formatting codes.", "https://wiki.vg/Chat#Colors");
+                ScrollArea::auto_sized()
+                .id_source("guide")
+                .show(ui, |ui| {
+                    ui.label("Style text by prefixing strings with &{code}. Here are color codes that can be used:");
+                    egui::Grid::new("color_guide_grid")
+                        .striped(true)
+                        .show(ui, |ui| {
+                            rows_for_guide_tables(ui, COLOR_GUIDE_ROWS);
+                        });
+    
+                    ui.add_space(20.0);
+                    ui.label("Text can also be styled using style codes:");
+                    egui::Grid::new("style_guide_grid")
+                        .striped(true)
+                        .show(ui, |ui| {
+                            rows_for_guide_tables(ui, STYLE_GUIDE_ROWS);
+                        });
+    
+                    ui.add_space(20.0);
+                    ui.hyperlink_to("Learn more about Minecraft's legacy formatting codes.", "https://wiki.vg/Chat#Colors");
+                });
             });
         });
     }
