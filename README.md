@@ -4,6 +4,7 @@
 [![Crates.io version](https://img.shields.io/crates/v/mc-legacy-formatting.svg)](https://crates.io/crates/mc-legacy-formatting)
 [![Crates.io downloads](https://img.shields.io/crates/d/mc-legacy-formatting.svg)](https://crates.io/crates/mc-legacy-formatting)
 ![CI](https://github.com/Cldfire/mc-legacy-formatting/workflows/CI/badge.svg)
+[![dependency status](https://deps.rs/repo/github/cldfire/mc-legacy-formatting/status.svg)](https://deps.rs/repo/github/cldfire/mc-legacy-formatting)
 
 A parser for Minecraft's [legacy formatting system][legacy_fmt], created
 with careful attention to the quirks of the vanilla client's implementation.

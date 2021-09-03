@@ -6,6 +6,7 @@ use mc_legacy_formatting::{Color, Styles};
 
 use crate::formatting::{label_from_style, render_mc_formatting, to_color_32};
 
+// TODO: derive a thing to get an iterator over enum variants
 const COLOR_GUIDE_ROWS: &[Color] = &[
     Color::Black,
     Color::DarkBlue,
@@ -88,6 +89,7 @@ trait GuideRowItem {
 }
 
 impl GuideRowItem for Color {
+    // TODO: add this to the lib
     fn name(&self) -> &'static str {
         match self {
             Color::Black => "Black",
@@ -109,6 +111,7 @@ impl GuideRowItem for Color {
         }
     }
 
+    // TODO: add this to the lib
     fn code(&self) -> &'static str {
         match self {
             Color::Black => "0",
@@ -137,6 +140,7 @@ impl GuideRowItem for Color {
 
 impl GuideRowItem for Styles {
     fn name(&self) -> &'static str {
+        // TODO: add this to the lib
         if self.contains(Styles::BOLD) {
             "Bold"
         } else if self.contains(Styles::ITALIC) {
@@ -153,6 +157,7 @@ impl GuideRowItem for Styles {
         }
     }
 
+    // TODO: add this to the lib
     fn code(&self) -> &'static str {
         if self.contains(Styles::BOLD) {
             "l"
