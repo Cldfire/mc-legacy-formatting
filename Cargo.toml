@@ -1,5 +1,2 @@
 [workspace]
-members = [
-    "mc-legacy-formatting",
-    "test-helper"
-]
+members = ["editor-gui", "mc-legacy-formatting", "test-helper"]
