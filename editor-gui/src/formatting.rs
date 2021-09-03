@@ -30,11 +30,7 @@ pub fn span_ui(ui: &mut Ui, span: Span<'_>) {
             text,
             color,
             styles,
-        } => ui.add(label_from_style(
-            &(0..text.len()).into_iter().map(|_| '-').collect::<String>(),
-            color,
-            styles,
-        )),
+        } => ui.add(label_from_style(&"-".repeat(text.len()), color, styles)),
         Span::Plain(text) => ui.add(Label::new(text).text_color(Color32::WHITE)),
     };
 }
