@@ -1,3 +1,5 @@
+use core::fmt::Display;
+
 use crate::{Color, Span, Styles};
 
 /// A wrapper around [`Span`] that provides colored pretty-printing
@@ -21,7 +23,7 @@ impl<'a> From<Span<'a>> for PrintSpanColored<'a> {
     }
 }
 
-impl<'a> core::fmt::Display for PrintSpanColored<'a> {
+impl<'a> Display for PrintSpanColored<'a> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         fn apply_color_and_styles(s: &str, color: Color, styles: Styles) -> colored::ColoredString {
             use self::Styles as McStyles;
@@ -57,19 +59,15 @@ impl<'a> core::fmt::Display for PrintSpanColored<'a> {
                 styles,
             } => {
                 let styled_text = apply_color_and_styles(text, color, styles);
-                f.write_fmt(format_args!("{}", styled_text))
+                Display::fmt(&styled_text, f)
             }
-            Span::Plain(_) => f.write_fmt(format_args!("{}", self.0)),
+            Span::Plain(_) => Display::fmt(&self.0, f),
             Span::StrikethroughWhitespace {
                 text,
                 color,
                 styles,
-            } => (0..text.len()).try_for_each(|_| {
-                f.write_fmt(format_args!(
-                    "{}",
-                    apply_color_and_styles("-", color, styles)
-                ))
-            }),
+            } => (0..text.len())
+                .try_for_each(|_| Display::fmt(&apply_color_and_styles("-", color, styles), f)),
         }
     }
 }

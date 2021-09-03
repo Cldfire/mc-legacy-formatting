@@ -47,10 +47,6 @@
 #![deny(missing_docs)]
 #![deny(unused_must_use)]
 
-/// Bring `std` in for testing
-#[cfg(test)]
-extern crate std;
-
 use core::str::CharIndices;
 
 use bitflags::bitflags;
@@ -351,7 +347,7 @@ pub enum Span<'a> {
     Plain(&'a str),
 }
 
-impl<'a> core::fmt::Display for Span<'a> {
+impl core::fmt::Display for Span<'_> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             // TODO: handle random style

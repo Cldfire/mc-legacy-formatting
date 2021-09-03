@@ -11,6 +11,3 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 eframe = "0.14.0"
 mc-legacy-formatting = { path = "../mc-legacy-formatting" }
-
-[profile.release]
-opt-level = 2
