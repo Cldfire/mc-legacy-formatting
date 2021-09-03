@@ -4,6 +4,10 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 ## [Unreleased]
 
+### Added
+
+* A native + web editor for `mc-legacy-formatting` has been added in the `editor-gui` folder
+
 ### Internal
 
 * `SpanIter` no longer keeps track of a `finished` flag as it was unnecessary
