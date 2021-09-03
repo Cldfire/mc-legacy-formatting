@@ -4,6 +4,10 @@ use common::*;
 
 use mc_legacy_formatting::{Color, Span, SpanIter, Styles};
 
+pub fn spans_sc(start_char: char, s: &str) -> Vec<Span> {
+    SpanIter::new(s).with_start_char(start_char).collect()
+}
+
 mod fake_codes {
     use super::*;
     use pretty_assertions::assert_eq;
