@@ -219,7 +219,7 @@ impl epi::App for EditorApp {
         vec2(160000.0, 160000.0)
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, _: &mut epi::Frame<'_>) {
+    fn update(&mut self, ctx: &egui::CtxRef, _: &epi::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("mc-legacy-formatting editor example");
             ui.hyperlink("https://github.com/Cldfire/mc-legacy-formatting");
@@ -263,7 +263,7 @@ impl epi::App for EditorApp {
             });
             ui.separator();
             ui.columns(2, |columns| {
-                ScrollArea::auto_sized()
+                ScrollArea::vertical()
                     .id_source("source")
                     .show(&mut columns[0], |ui| {
                         ui.add(
@@ -271,7 +271,7 @@ impl epi::App for EditorApp {
                                 .text_style(TextStyle::Monospace),
                         );
                     });
-                ScrollArea::auto_sized()
+                ScrollArea::vertical()
                     .id_source("rendered")
                     .show(&mut columns[1], |ui| {
                         ui.horizontal_wrapped(|ui| {
@@ -283,7 +283,7 @@ impl epi::App for EditorApp {
                     });
             });
             ui.collapsing("Guide", |ui| {
-                ScrollArea::auto_sized()
+                ScrollArea::vertical()
                 .id_source("guide")
                 .show(ui, |ui| {
                     ui.label("Style text by prefixing strings with &{code}. Here are color codes that can be used:");

@@ -31,40 +31,40 @@ pub fn span_ui(ui: &mut Ui, span: Span<'_>) {
             color,
             styles,
         } => ui.add(label_from_style(&"-".repeat(text.len()), color, styles)),
-        Span::Plain(text) => ui.add(Label::new(text).text_color(Color32::WHITE)),
+        Span::Plain(text) => ui.add(Label::new(RichText::new(text).color(Color32::WHITE))),
     };
 }
 
 pub fn label_from_style(text: &str, color: Color, styles: Styles) -> Label {
-    let mut label = Label::new(text);
+    let mut rich_text = RichText::new(text);
 
     if styles.contains(Styles::RANDOM) {
         // TODO: randomly generate this, animate it
-        label = Label::new("1k4jkmnkjnqo");
+        rich_text = RichText::new("1k4jkmnkjnqo");
     }
 
     if styles.contains(Styles::BOLD) {
-        label = label.strong();
+        rich_text = rich_text.strong();
     }
 
     if styles.contains(Styles::ITALIC) {
-        label = label.italics();
+        rich_text = rich_text.italics();
     }
 
     if styles.contains(Styles::STRIKETHROUGH) {
-        label = label.strikethrough();
+        rich_text = rich_text.strikethrough();
     }
 
     if styles.contains(Styles::UNDERLINED) {
-        label = label.underline();
+        rich_text = rich_text.underline();
     }
 
-    label = label.text_color(to_color_32(color.foreground_rgb()));
+    rich_text = rich_text.color(to_color_32(color.foreground_rgb()));
     // TODO: make background color more like MC
     // label = label.background_color(to_color_32(color.background_rgb()));
 
     // TODO: use MC font
-    label
+    Label::new(rich_text)
 }
 
 pub fn to_color_32((r, g, b): (u8, u8, u8)) -> Color32 {
