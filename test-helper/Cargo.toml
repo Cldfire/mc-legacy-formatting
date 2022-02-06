@@ -9,4 +9,4 @@ publish = false
 
 [dependencies]
 mc-legacy-formatting = { path = "../mc-legacy-formatting" }
-dialoguer = "0.8"
+dialoguer = "0.9.0"
