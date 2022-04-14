@@ -187,7 +187,7 @@ fn rows_for_guide_tables(ui: &mut Ui, data: &[impl GuideRowItem]) {
                 0 => row.preview(ui),
                 1 => {
                     ui.scope(|ui| {
-                        ui.style_mut().body_text_style = egui::TextStyle::Monospace;
+                        ui.style_mut().override_text_style = Some(egui::TextStyle::Monospace);
                         ui.label(row.code());
                     });
                 }
@@ -219,7 +219,7 @@ impl epi::App for EditorApp {
         vec2(160000.0, 160000.0)
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, _: &epi::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _: &epi::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("mc-legacy-formatting editor example");
             ui.hyperlink("https://github.com/Cldfire/mc-legacy-formatting");
@@ -268,7 +268,7 @@ impl epi::App for EditorApp {
                     .show(&mut columns[0], |ui| {
                         ui.add(
                             TextEdit::multiline(&mut self.entered_text)
-                                .text_style(TextStyle::Monospace),
+                            .font(TextStyle::Monospace)
                         );
                     });
                 ScrollArea::vertical()
@@ -276,7 +276,7 @@ impl epi::App for EditorApp {
                     .show(&mut columns[1], |ui| {
                         ui.horizontal_wrapped(|ui| {
                             ui.spacing_mut().item_spacing.x = 0.0;
-                            ui.set_row_height(ui.fonts()[TextStyle::Body].row_height());
+                            ui.set_row_height(ui.text_style_height(&TextStyle::Body));
 
                             render_mc_formatting(ui, &self.entered_text);
                         })

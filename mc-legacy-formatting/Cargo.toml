@@ -13,7 +13,7 @@ categories = ["game-development", "no-std", "parser-implementations"]
 # It looks like there's literally no way to get cargo to include anything outside the
 # crate directory in the package :(
 readme = "../README.md"
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

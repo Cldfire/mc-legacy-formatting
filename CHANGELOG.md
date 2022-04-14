@@ -11,6 +11,8 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 ### Internal
 
 * `SpanIter` no longer keeps track of a `finished` flag as it was unnecessary
+* Bumped all crates to Rust 2021
+* Enabled the v2 feature resolver for the workspace
 * Updated dependencies
 * Added the `Cargo.lock` file to the repo
 

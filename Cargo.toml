@@ -1,2 +1,3 @@
 [workspace]
 members = ["editor-gui", "mc-legacy-formatting", "test-helper"]
+resolver = "2"

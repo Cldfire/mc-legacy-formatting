@@ -11,7 +11,7 @@ pub fn render_mc_formatting(ui: &mut Ui, input: &str) {
 pub fn render_mc_formatting_items<'a>(ui: &mut Ui, items: impl Iterator<Item = Span<'a>>) {
     ui.horizontal_wrapped(|ui| {
         ui.spacing_mut().item_spacing.x = 0.0;
-        ui.set_row_height(ui.fonts()[TextStyle::Body].row_height());
+        ui.set_row_height(ui.text_style_height(&TextStyle::Body));
 
         for item in items {
             span_ui(ui, item);
