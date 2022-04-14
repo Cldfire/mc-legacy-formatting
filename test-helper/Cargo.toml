@@ -1,7 +1,7 @@
 [package]
 name = "test-helper"
 version = "0.1.0"
-authors = ["Cldfire <cldfire3@gmail.com>"]
+authors = ["Cldfire <cldfire@cldfire.dev>"]
 edition = "2018"
 publish = false
 
@@ -9,4 +9,4 @@ publish = false
 
 [dependencies]
 mc-legacy-formatting = { path = "../mc-legacy-formatting" }
-dialoguer = "0.9.0"
+dialoguer = "0.10.0"
