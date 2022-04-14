@@ -8,6 +8,10 @@ Notable `mc-legacy-formatting` changes, tracked in the [keep a changelog](https:
 
 * A native + web editor for `mc-legacy-formatting` has been added in the `editor-gui` folder
 
+### Changed
+
+* MSRV is now 1.56.0 (since we've moved to the Rust 2021 edition)
+
 ### Internal
 
 * `SpanIter` no longer keeps track of a `finished` flag as it was unnecessary

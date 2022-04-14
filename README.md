@@ -61,7 +61,7 @@ The [editor-gui](./editor-gui) folder contains a small Rust GUI program built on
 
 ## MSRV
 
-The Minimum Supported Rust Version is currently 1.48.0. This will be bumped to the latest stable version of Rust when needed.
+The Minimum Supported Rust Version is currently 1.56.0. This will be bumped to the latest stable version of Rust when needed.
 
 #### License
 
