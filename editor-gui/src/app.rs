@@ -1,7 +1,4 @@
-use eframe::{
-    egui::{self, color_picker::show_color, vec2, ScrollArea, TextEdit, TextStyle, Ui},
-    epi,
-};
+use eframe::egui::{self, color_picker::show_color, vec2, ScrollArea, TextEdit, TextStyle, Ui};
 use mc_legacy_formatting::{Color, Styles};
 
 use crate::formatting::{label_from_style, render_mc_formatting, to_color_32};
@@ -39,6 +36,16 @@ const STYLE_GUIDE_ROWS: &[Styles] = &[
 pub struct EditorApp {
     entered_text: String,
     preset: PresetText,
+}
+
+impl EditorApp {
+    pub fn new(_: &eframe::CreationContext<'_>) -> Self {
+        // Customize egui here with cc.egui_ctx.set_fonts and cc.egui_ctx.set_visuals.
+        // Restore app state using cc.storage (requires the "persistence" feature).
+        // Use the cc.gl (a glow::Context) to create graphics shaders and buffers that you can use
+        // for e.g. egui::PaintCallback.
+        Self::default()
+    }
 }
 
 impl Default for EditorApp {
@@ -210,16 +217,12 @@ fn dark_light_mode_switch(ui: &mut egui::Ui) {
     }
 }
 
-impl epi::App for EditorApp {
-    fn name(&self) -> &str {
-        "mc-legacy-formatting editor"
-    }
-
+impl eframe::App for EditorApp {
     fn max_size_points(&self) -> egui::Vec2 {
         vec2(160000.0, 160000.0)
     }
 
-    fn update(&mut self, ctx: &egui::Context, _: &epi::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("mc-legacy-formatting editor example");
             ui.hyperlink("https://github.com/Cldfire/mc-legacy-formatting");

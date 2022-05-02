@@ -9,5 +9,5 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-eframe = "0.17.0"
+eframe = "0.18.0"
 mc-legacy-formatting = { path = "../mc-legacy-formatting" }
