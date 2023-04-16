@@ -20,13 +20,10 @@ First, see [egui's README](https://github.com/emilk/egui#demo) and follow their 
 
 To build `editor-gui` for the web:
 
-* Make sure you have `wasm-opt` installed and available on your path
-  * On Linux, `sudo apt install binaryen` or similar
-* From the repo root:
-  * `./editor-gui/setup_web.sh`
-  * `./editor-gui/start_server.sh`
-  * `./editor-gui/build_web.sh`
-* The editor will open in your web browser
+* `cargo install trunk --locked`
+* From the `editor-gui` folder:
+  * `trunk serve`
+  * The editor will open in your web browser
 
 ### Building Natively
 
