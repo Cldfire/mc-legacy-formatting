@@ -1,9 +1,0 @@
-{
-  "name": "Egui Template PWA",
-  "short_name": "editor-gui-pwa",
-  "lang": "en-US",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "white",
-  "theme_color": "white"
-}

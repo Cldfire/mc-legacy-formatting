@@ -590,7 +590,7 @@ bitflags! {
     /// ```
     ///
     /// [styles]: https://wiki.vg/Chat#Styles
-    #[derive(Default)]
+    #[derive(Debug, Default, Eq, PartialEq, Hash, Copy, Clone)]
     pub struct Styles: u32 {
         /// Signals that the `Span`'s text should be replaced with randomized
         /// characters at a constant interval
