@@ -1,0 +1,6 @@
+[build]
+filehash = false
+
+[serve]
+# Open a browser tab once the initial build is complete.
+open = true

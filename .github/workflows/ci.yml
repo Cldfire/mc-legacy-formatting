@@ -1,9 +1,8 @@
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
-
 
 name: CI
 
@@ -15,8 +14,6 @@ jobs:
       matrix:
         rust:
           - stable
-          # MSRV
-          - 1.56.0
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -26,6 +23,21 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+
+  check-msrv:
+    name: Check MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          # MSRV
+          toolchain: 1.56.0
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: -p mc-legacy-formatting
 
   check-wasm:
     name: Check wasm32
@@ -41,6 +53,24 @@ jobs:
         with:
           command: check
           args: -p editor-gui --all-features --lib --target wasm32-unknown-unknown
+
+  trunk:
+    name: trunk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+      - name: Download and install Trunk binary
+        run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+      - name: Build
+        run: |
+          cd editor-gui
+          ../trunk build
 
   verify-nostd-support:
     name: Verify `no_std` Support
